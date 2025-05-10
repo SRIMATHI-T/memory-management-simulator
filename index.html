@@ -1,0 +1,165 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+  <meta charset="UTF-8" /> 
+  <meta name="viewport" content="width=device-width, initial
+scale=1.0"/> 
+  <title>Memory Allocation Simulator</title> 
+  <style> 
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background-color: #f4f4f9; 
+      padding: 40px; 
+      margin: 0; 
+    } 
+    h2 { 
+      text-align: center; 
+      color: #333; 
+      margin-bottom: 20px; 
+    } 
+    .container { 
+      max-width: 700px; 
+      margin: auto; 
+      background: white; 
+      padding: 30px; 
+      border-radius: 12px; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+    } 
+    label { 
+      font-weight: bold; 
+      display: block; 
+      margin-top: 15px; 
+      color: #444; 
+    } 
+    input, select, button { 
+      width: 100%; 
+      padding: 10px; 
+      margin-top: 5px; 
+      border: 1px solid #ccc; 
+      border-radius: 6px; 
+      font-size: 16px; 
+      box-sizing: border-box; 
+    } 
+    button { 
+      background-color: #4CAF50; 
+      color: white; 
+      font-weight: bold; 
+      cursor: pointer; 
+      margin-top: 20px; 
+    } 
+    button:hover { 
+      background-color: #45a049; 
+    } 
+    .results { 
+      margin-top: 30px; 
+    } 
+    .block { 
+      padding: 10px; 
+      margin-bottom: 8px; 
+      border-radius: 6px; 
+      font-weight: bold; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    } 
+    .allocated { 
+      background-color: #d1e7dd; 
+      color: #0f5132; 
+      border-left: 5px solid #198754; 
+    } 
+    .unallocated { 
+      background-color: #f8d7da; 
+      color: #842029; 
+      border-left: 5px solid #dc3545; 
+    } 
+    .footer { 
+      text-align: center; 
+      margin-top: 40px; 
+      color: #aaa; 
+      font-size: 14px; 
+    } 
+  </style> 
+</head> 
+<body> 
+  <div class="container"> 
+    <h2>Memory Allocation Simulator</h2> 
+    <label for="blocksInput">Memory Blocks (comma-separated 
+KB):</label> 
+    <input type="text" id="blocksInput" value="100, 500, 200, 300, 600" /> 
+    <label for="processesInput">Processes (comma-separated KB):</label> 
+    <input type="text" id="processesInput" value="212, 417, 112, 426" /> 
+    <label for="strategy">Allocation Strategy:</label> 
+    <select id="strategy"> 
+      <option value="first">First Fit</option> 
+      <option value="best">Best Fit</option> 
+      <option value="worst">Worst Fit</option> 
+    </select> 
+<button onclick="allocate()">Allocate Memory</button> 
+ 
+    <div class="results" id="output"></div> 
+  </div> 
+ 
+  <div class="footer"> 
+    &copy; 2025 Memory Allocation Simulator | Front-End Demo 
+  </div> 
+ 
+  <script> 
+    function allocate() { 
+      const blocks = 
+document.getElementById('blocksInput').value.split(',').map(x => 
+parseInt(x.trim())); 
+      const processes = 
+document.getElementById('processesInput').value.split(',').map(x => 
+parseInt(x.trim())); 
+      const strategy = document.getElementById('strategy').value; 
+ 
+      let memBlocks = blocks.map(size => ({ size, allocated: false, process: 
+null })); 
+ 
+      processes.forEach(proc => { 
+        let selectedIndex = -1; 
+ 
+        if (strategy === 'first') { 
+          selectedIndex = memBlocks.findIndex(block => !block.allocated 
+&& block.size >= proc); 
+        } else if (strategy === 'best') { 
+          let minDiff = Infinity; 
+          memBlocks.forEach((block, i) => { 
+            if (!block.allocated && block.size >= proc && block.size - proc < 
+minDiff) { 
+              selectedIndex = i; 
+              minDiff = block.size - proc; 
+            } 
+          }); 
+        } else if (strategy === 'worst') { 
+          let maxDiff = -1; 
+          memBlocks.forEach((block, i) => { 
+            if (!block.allocated && block.size >= proc && block.size - proc > 
+maxDiff) { 
+              selectedIndex = i; 
+              maxDiff = block.size - proc; 
+            } 
+          }); 
+        } 
+ 
+        if (selectedIndex !== -1) { 
+          memBlocks[selectedIndex].allocated = true; 
+          memBlocks[selectedIndex].process = proc; 
+        } 
+      }); 
+ 
+      const outputDiv = document.getElementById('output'); 
+      outputDiv.innerHTML = "<h3>Memory Blocks:</h3>"; 
+ 
+      memBlocks.forEach((block, i) => { 
+        const div = document.createElement('div'); 
+        div.className = 'block ' + (block.allocated ? 'allocated' : 
+'unallocated'); 
+        div.innerText = `Block ${i + 1} (${block.size}KB): ` + 
+          (block.allocated ? `P${block.process} | Fragmentation: ${block.size - block.process}KB` : `Free`); 
+        outputDiv.appendChild(div); 
+      }); 
+    } 
+  </script> 
+</body> 
+</html>
