@@ -48,12 +48,6 @@ Simulate memory allocation by entering memory block sizes and process sizes, cho
 
 ---
 
-## 📃 License
-
-This project is free for educational and personal use.
-
----
-
 ## 📸 UI Preview Example
 
 **Memory Blocks (comma-separated KB):** `100, 500, 200, 300, 600`  
